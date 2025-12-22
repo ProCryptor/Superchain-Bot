@@ -39,8 +39,6 @@ CROSS_CHAIN_VOYAGE = [
 ]
 
 FULL = [
-    ["OKX_WITHDRAW"],
-
     ["RANDOM_TXS"],
     ["RANDOM_SWAPS"],
     ["SWAP_ALL_TO_ETH"],
