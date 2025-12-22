@@ -7,8 +7,8 @@ MOBILE_PROXY = False  # True - мобильные proxy/False - обычные p
 ROTATE_IP = False  # Настройка только для мобильных proxy
 SLIPPAGE = 0.03
 
-TG_BOT_TOKEN = '1234567890:abcde2VHUAfnD6vEbCeLHONvFIbdACBMJ5U'
-TG_USER_ID = 1234567890
+# TG_BOT_TOKEN = '1234567890:abcde2VHUAfnD6vEbCeLHONvFIbdACBMJ5U'
+# TG_USER_ID = 1234567890
 
 SHUFFLE_WALLETS = True
 PAUSE_BETWEEN_WALLETS = [30, 100]
