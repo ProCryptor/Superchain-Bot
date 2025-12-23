@@ -106,6 +106,18 @@ class ActivityPlanner:
         logger.info(f'Planner: selected chain for today → {chain}')
         return chain
 
+    def choose_bridge_target(self, current_chain: str) -> str | None:
+        """
+        Выбор сети для моста
+        """
+        from src.utils.data.bridges import BRIDGES
+
+        targets = BRIDGES.get(current_chain)
+        if not targets:
+            return None
+
+        return random.choice(targets)
+
     def is_bridge_day(self, day_type: str) -> bool:
         base_chance = 0.15 if day_type == 'LIGHT' else 0.35
 
