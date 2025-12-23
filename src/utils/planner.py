@@ -114,7 +114,7 @@ class ActivityPlanner:
         elif self.personality == 'LAZY':
             base_chance -= 0.10
 
-    return random.random() < max(0.05, min(base_chance, 0.8))
+        return random.random() < max(0.05, min(base_chance, 0.8))
 
 
     def get_weekday_modifier(self) -> float:
