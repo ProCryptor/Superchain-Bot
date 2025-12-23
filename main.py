@@ -55,6 +55,14 @@ async def process_task(routes: list[Route]) -> None:
 async def process_route(route: Route) -> None:
     planner = ActivityPlanner()
 
+    from src.utils.user.account import Account  # импорт (если его ещё нет в начале файла)
+
+    account = Account(
+        private_key=route.wallet.private_key,
+        proxy=route.wallet.proxy,
+    )
+    wallet_address = account.wallet_address[:6] + '...' + account.wallet_address[-4:]
+
     # Решаем: работает кошелёк сегодня или нет
     if not planner.should_work_today():
         logger.info(f'Wallet {route.wallet.private_key[:6]}... skips today')
