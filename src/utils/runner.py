@@ -146,7 +146,7 @@ process_relay_swap = create_process_swap_function(RelaySwapSettings, RelaySwap)
 
 
 async def process_bridge(route: Route, to_chain: Chain, from_chain: Chain, bridge_class: type) -> Optional[bool]:
-    if to_chain.chain_name == from_chain:
+    if to_chain.chain_name == from_chain.chain_name:
         return True
 
     to_chain_account = Account(
@@ -319,7 +319,7 @@ async def process_activities(route: Route, chain_name: str, activities: list[str
         if activity == 'RANDOM_TXS':
             await process_random_activities(route, chain_name)
             continue
-        elif activity not in AVAILABLE_ACTIVITIES[chain.chain_name]:
+        elif activity not in AVAILABLE_ACTIVITIES.get(chain.chain_name, []):
             logger.warning(f'Activity {activity} not availible in chain {chain.chain_name}')
             continue
         await function_handlers[activity](route, chain)
@@ -458,7 +458,7 @@ async def process_random_swaps(route: Route, chain: Chain) -> Optional[bool]:
             logger.info(f'Sleep {random_sleep} secs before next swap...')
             await sleep(random_sleep)
 
-        if swapped == 'ZeroBalance':
+        if swapped in ('ZeroBalance', False):
             await sleep(2)
 
         # 15% шанс сделать дополнительный свап сразу
