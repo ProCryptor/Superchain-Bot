@@ -24,7 +24,7 @@ from src.models.chain import Chain
 from src.utils.data.chains import chain_mapping
 from src.utils.memory import MemoryManager
 from src.utils.tg_app.telegram_notifications import TGApp
-
+from src.utils.bridges.process_chain_disperse import process_chain_disperse
 from src.ui.interface import get_module, LOGO_LINES, PROJECT_INFO, clear_screen, get_module_menu
 
 # Настройка логгеров
@@ -73,6 +73,7 @@ async def process_route(route: Route) -> None:
         return
         
     chain_name = planner.get_chain_for_today()
+    route.current_chain = chain_name
 
     # Тип дня и количество tx
     day_type = planner.get_day_type()
