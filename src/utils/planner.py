@@ -17,17 +17,38 @@ class ActivityPlanner:
         # Паузы между днями
         self.pause_days_after_full = (1, 2)
         self.pause_days_after_light = (0, 1)
+        self.personality = None
+
+    def assign_wallet_personality(self, wallet_id: str) -> str:
+        """
+        Закрепляем характер за кошельком НАВСЕГДА
+        """
+        random.seed(wallet_id)
+
+        personalities = [
+            'LAZY',        # часто пропускает дни
+            'NORMAL',      # обычный
+            'ACTIVE',      # много действий
+            'BRIDGE_LOVER' # часто мосты
+        ]
+
+        personality = random.choice(personalities)
+        logger.info(f'Planner: wallet personality → {personality}')
+        return personality
 
     def should_work_today(self) -> bool:
+        modifier = self.get_weekday_modifier()
         roll = random.random()
 
-        if roll < self.skip_day_chance:
-            logger.info('Planner: skip day (no activity)')
+        adjusted_skip = self.skip_day_chance / modifier
+
+        if roll < adjusted_skip:
+            logger.info('Planner: skip day (weekly behavior)')
             return False
 
         logger.info('Planner: active day')
         return True
-
+        
     def get_day_type(self) -> str:
         roll = random.random()
 
@@ -36,9 +57,15 @@ class ActivityPlanner:
         return 'FULL'
 
     def get_transactions_count(self, day_type: str) -> int:
+        modifier = self.get_weekday_modifier()
+
         if day_type == 'LIGHT':
-            return random.randint(*self.light_day_tx_range)
-        return random.randint(*self.full_day_tx_range)
+            base = random.randint(*self.light_day_tx_range)
+        else:
+            base = random.randint(*self.full_day_tx_range)
+
+        tx_count = int(base * modifier)
+        return max(1, tx_count)
 
     def get_pause_days_after(self, day_type: str) -> int:
         if day_type == 'LIGHT':
@@ -70,4 +97,22 @@ class ActivityPlanner:
         if day_type == 'FULL':
             return random.random() < 0.35
         return random.random() < 0.15
+
+    def get_weekday_modifier(self) -> float:
+        """
+        Модификатор активности по дню недели
+        """
+        weekday = datetime.utcnow().weekday()  # 0 = Monday, 6 = Sunday
+
+        if weekday in (5, 6):  # Saturday, Sunday
+            logger.info('Planner: weekend detected → lower activity')
+            return 0.6
+
+        return 1.0
+           
+    
+
+
+
+
 
