@@ -506,7 +506,13 @@ async def process_swap_all_to_eth(route: Route, chain: Chain) -> Optional[bool]:
 
             swap_class = random.choice(supported_swap_classes)
             i += 1
+            
+            # Рандомизация поведения
+            use_all_balance = random.random() < 0.7
+            use_percentage = not use_all_balance
+            swap_percentage = random.uniform(0.3, 0.8) if use_percentage else 0.0
 
+            
             swap_all_tokens_swap = swap_class(
                 private_key=route.wallet.private_key,
                 from_token=token,
@@ -514,9 +520,9 @@ async def process_swap_all_to_eth(route: Route, chain: Chain) -> Optional[bool]:
                 amount=0.0,
                 use_percentage=False,
                 swap_percentage=0.1,
-                swap_all_balance = random.random() < 0.7
-                use_percentage = not swap_all_balance
-                swap_percentage = random.uniform(0.3, 0.8),
+                swap_all_balance=swap_all_balance,
+                use_percentage=use_percentage,
+                swap_percentage=swap_percentage,
                 proxy=route.wallet.proxy,
                 chain=chain
             )
