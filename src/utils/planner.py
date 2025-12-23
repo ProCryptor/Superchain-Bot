@@ -70,4 +70,4 @@ class ActivityPlanner:
         """
         Bridge-день (пока без реализации логики)
         """
-        return random.random() < 0.15  # 15% дней
+        return random.random() < 0.35  # 35% дней
