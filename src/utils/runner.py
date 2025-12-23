@@ -473,7 +473,8 @@ async def process_swap_all_to_eth(route: Route, chain: Chain) -> Optional[bool]:
     # 30% шанс оставить токены
     if random.random() < 0.3:
         logger.info('Keeping tokens, not swapping all to ETH')
-    
+        return True
+        
     token_list = list(tokens[chain.chain_name].keys())
     if 'WETH' in token_list:
         token_list.remove('WETH')
