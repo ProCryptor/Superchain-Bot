@@ -645,7 +645,7 @@ function_handlers = {
     'RELAY_SWAP': process_relay_swap,
     'RUBYSCORE_VOTE': process_rubyscore_vote,
     'CONTRACT_DEPLOY': process_deploy,
-    'WRAPPER_UNWRAPPER': process_wrapper_unwrapper
+    'WRAPPER_UNWRAPPER': process_wrapper_unwrapper,
     'BRIDGE_RANDOM': process_chain_disperse
 }
 
