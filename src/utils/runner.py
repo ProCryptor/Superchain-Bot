@@ -518,7 +518,6 @@ async def process_swap_all_to_eth(route: Route, chain: Chain) -> Optional[bool]:
                 from_token=token,
                 to_token='ETH',
                 amount=0.0,
-                use_percentage=False,
                 swap_percentage=0.1,
                 swap_all_balance=swap_all_balance,
                 use_percentage=use_percentage,
