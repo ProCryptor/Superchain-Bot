@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Any
 
 from pydantic import BaseModel, model_validator, Field
+from eth_account import Account as EthAccount
 
 from config import MOBILE_PROXY
 from src.utils.proxy_manager import Proxy
