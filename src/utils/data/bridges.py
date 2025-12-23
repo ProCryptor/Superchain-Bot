@@ -1,0 +1,6 @@
+BRIDGES = {
+    'BASE': ['OPTIMISM', 'ARBITRUM', 'LINEA'],
+    'OPTIMISM': ['BASE', 'ARBITRUM'],
+    'ARBITRUM': ['BASE', 'OPTIMISM'],
+    'LINEA': ['BASE'],
+}
