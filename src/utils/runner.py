@@ -216,9 +216,10 @@ async def get_balances_for_chains(
 
 
 async def process_chain_disperse(route: Route) -> Optional[bool]:
-    # Сколько bridge-операций сегодня
     bridge_rounds = random.randint(1, 3)
     logger.info(f'Planner: bridge rounds today → {bridge_rounds}')
+
+    round_counter = 0
 
     chains = DisperseChainsSettings.base_chain
     balances = await get_balances_for_chains(
@@ -226,6 +227,7 @@ async def process_chain_disperse(route: Route) -> Optional[bool]:
         route.wallet.private_key,
         route.wallet.proxy
     )
+
     from_chain_name = max(balances, key=balances.get)
     from_chain = Chain(
         chain_name=from_chain_name,
@@ -233,24 +235,14 @@ async def process_chain_disperse(route: Route) -> Optional[bool]:
         rpc=chain_mapping[from_chain_name].rpc,
         chain_id=chain_mapping[from_chain_name].chain_id
     )
+
     to_chains = DisperseChainsSettings.to_chains
     random.shuffle(to_chains)
 
     for to_chain_name in to_chains:
         if round_counter >= bridge_rounds:
             break
-           round_counter += 1
 
-        # 25% шанс остановиться раньше
-        if random.random() < 0.25:
-            logger.info('Planner: stopping bridges early (human decision)')
-            break
-            
-          # 40% шанс сделать свап сразу после моста
-        if random.random() < 0.4:
-            logger.info('Planner: doing swap after bridge')
-            await process_random_swaps(route, to_chain)
-  
         to_chain = Chain(
             chain_name=to_chain_name,
             native_token=chain_mapping[to_chain_name].native_token,
@@ -260,24 +252,33 @@ async def process_chain_disperse(route: Route) -> Optional[bool]:
 
         from_chain_bridges = SUPPORTED_BRIDGES_BY_CHAIN.get(from_chain_name, [])
         to_chain_bridges = SUPPORTED_BRIDGES_BY_CHAIN.get(to_chain_name, [])
+        compatible_bridges = [b for b in from_chain_bridges if b in to_chain_bridges]
 
-        compatible_bridges = [bridge for bridge in from_chain_bridges if bridge in to_chain_bridges]
-
-        if compatible_bridges:
-            selected_bridge = random.choice(compatible_bridges)
-            await process_bridge(route, to_chain, from_chain, selected_bridge)
-        else:
-            logger.warning(f'No compatible bridges found for {from_chain_name} -> {to_chain_name}. Skipping.')
+        if not compatible_bridges:
+            logger.warning(f'No compatible bridges for {from_chain_name} → {to_chain_name}')
             continue
 
-        random_sleep = random.randint(PAUSE_BETWEEN_MODULES[0], PAUSE_BETWEEN_MODULES[1]) if isinstance(
-            PAUSE_BETWEEN_MODULES, list) else PAUSE_BETWEEN_MODULES
+        selected_bridge = random.choice(compatible_bridges)
+        bridged = await process_bridge(route, to_chain, from_chain, selected_bridge)
 
-        logger.info(f'Sleep {random_sleep} secs before next bridge...')
+        if bridged:
+            round_counter += 1
 
-        await sleep(random_sleep)
+            # 40% шанс свапа после моста
+            if random.random() < 0.4:
+                logger.info('Planner: swap after bridge')
+                await process_random_swaps(route, to_chain)
+
+            # 25% шанс остановиться раньше
+            if random.random() < 0.25:
+                logger.info('Planner: stopping bridges early')
+                break
+
+            random_sleep = random.randint(*PAUSE_BETWEEN_MODULES)
+            await sleep(random_sleep)
 
     return True
+
 
 
 def generate_activities(chain_name) -> list[str]:
