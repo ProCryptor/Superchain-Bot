@@ -66,8 +66,8 @@ class ActivityPlanner:
         logger.info(f'Planner: selected chain for today → {chain}')
         return chain
 
-    def is_bridge_day(self) -> bool:
-        """
-        Bridge-день (пока без реализации логики)
-        """
-        return random.random() < 0.35  # 35% дней
+    def is_bridge_day(self, day_type: str) -> bool:
+        if day_type == 'FULL':
+            return random.random() < 0.35
+        return random.random() < 0.15
+
