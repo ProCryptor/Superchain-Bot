@@ -216,6 +216,10 @@ async def get_balances_for_chains(
 
 
 async def process_chain_disperse(route: Route) -> Optional[bool]:
+    # Сколько bridge-операций сегодня
+    bridge_rounds = random.randint(1, 3)
+    logger.info(f'Planner: bridge rounds today → {bridge_rounds}')
+
     chains = DisperseChainsSettings.base_chain
     balances = await get_balances_for_chains(
         chains,
@@ -233,6 +237,20 @@ async def process_chain_disperse(route: Route) -> Optional[bool]:
     random.shuffle(to_chains)
 
     for to_chain_name in to_chains:
+        if round_counter >= bridge_rounds:
+            break
+           round_counter += 1
+
+        # 25% шанс остановиться раньше
+        if random.random() < 0.25:
+            logger.info('Planner: stopping bridges early (human decision)')
+            break
+            
+          # 40% шанс сделать свап сразу после моста
+        if random.random() < 0.4:
+            logger.info('Planner: doing swap after bridge')
+            await process_random_swaps(route, to_chain)
+  
         to_chain = Chain(
             chain_name=to_chain_name,
             native_token=chain_mapping[to_chain_name].native_token,
