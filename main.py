@@ -94,7 +94,9 @@ async def process_route(route: Route) -> None:
             logger.info(f'Skipping task {task} (human randomness)')
             continue
 
-        module_tasks.append(create_task(process_module(task, route, private_key)))
+        module_tasks.append(
+            create_task(process_module(task, route, private_key, chain_name=chain_name))
+        )
 
         random_sleep = random.randint(
             PAUSE_BETWEEN_MODULES[0],
