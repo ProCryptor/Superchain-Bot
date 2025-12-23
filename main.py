@@ -126,26 +126,29 @@ async def process_route(route: Route) -> None:
             continue
         
         if task == 'BRIDGE_RANDOM':
-            await process_chain_disperse(route)
-            memory.remember_bridge(wallet_id)
-            memory.remember_task(wallet_id, task)
-            continue
+            success = await process_chain_disperse(route)
+            if success:
+                memory.remember_bridge(wallet_id)
+                memory.remember_task(wallet_id, task)
 
-        if task == 'BRIDGE_RANDOM':
-            await process_chain_disperse(route)
-            memory.remember_bridge(wallet_id)
-
-            # пересобираем задачи под новую сеть
-            current_chain = route.current_chain
-            available_tasks = CHAIN_MODULES.get(current_chain, [])
-            random.shuffle(available_tasks)
-            tasks_today = available_tasks[:tx_count]
+                # пересобираем задачи под новую сеть
+                current_chain = route.current_chain
+                available_tasks = CHAIN_MODULES.get(current_chain, [])
+                random.shuffle(available_tasks)
+                tasks_today = available_tasks[:tx_count]
 
             continue
+
     
         module_tasks.append(
-            create_task(process_module(task, route, private_key, chain_name=chain_name))
-        )
+            create_task(
+                process_module(
+                    task,
+                    route,
+                    private_key,
+                    chain_name=route.current_chain
+                )
+            )
 
         memory.remember_chain(wallet_id, chain_name)
 
