@@ -12,7 +12,7 @@ class ActivityPlanner:
 
         # Количество действий
         self.light_day_tx_range = (1, 2)
-        self.full_day_tx_range = (3, 6)
+        self.full_day_tx_range = (5, 12)
 
         # Паузы между днями
         self.pause_days_after_full = (1, 2)
