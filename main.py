@@ -150,7 +150,11 @@ async def process_route(route: Route) -> None:
                 )
             )
 
-        memory.remember_chain(wallet_id, chain_name)
+        chain_name = planner.get_chain_for_today()
+
+        if memory.was_chain_recent(wallet_id, chain_name):
+            logger.info(f'Memory: avoiding repeated chain {chain_name}')
+            chain_name = planner.get_chain_for_today()
 
         random_sleep = random.randint(
             PAUSE_BETWEEN_MODULES[0],
