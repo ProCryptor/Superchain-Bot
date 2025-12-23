@@ -96,6 +96,11 @@ async def process_route(route: Route) -> None:
     random.shuffle(tasks_today)
     tasks_today = tasks_today[:tx_count]
 
+    # === BRIDGE DAY LOGIC ===
+    if is_bridge_day and 'BRIDGE_RANDOM' not in tasks_today:
+        logger.info('Planner: BRIDGE day → adding BRIDGE_RANDOM as first task')
+        tasks_today.insert(0, 'BRIDGE_RANDOM')
+
     module_tasks = []
 
     for task in tasks_today:
