@@ -141,6 +141,9 @@ async def process_route(route: Route) -> None:
         if task == 'BRIDGE_RANDOM':
             success = await process_chain_disperse(route)
             if success:
+                if not route.current_chain:
+                    raise RuntimeError("Bridge succeeded but route.current_chain not updated")
+                    
                 memory.remember_bridge(wallet_id)
                 memory.remember_task(wallet_id, task)
             break    
