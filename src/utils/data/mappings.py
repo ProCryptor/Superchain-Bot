@@ -1,4 +1,4 @@
-from src.utils.runner import *
+from src.utils.legacy.runner import *
 
 module_handlers = {
     'OKX_WITHDRAW': process_cex_withdraw,
