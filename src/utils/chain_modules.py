@@ -1,3 +1,5 @@
+from src.modules.uniswap import process_uniswap
+
 CHAIN_MODULES = {
     'BASE': [
         'UNISWAP',
