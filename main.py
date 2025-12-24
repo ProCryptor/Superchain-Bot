@@ -44,15 +44,17 @@ async def process_task(routes: list[Route]) -> None:
         return
 
     wallet_tasks = []
-        for route in routes:
-            wallet_tasks.append(
-        create_task(
-            safe_process_route(route)
-        )
-    )
 
-        time_to_pause = random.randint(PAUSE_BETWEEN_WALLETS[0], PAUSE_BETWEEN_WALLETS[1]) \
-            if isinstance(PAUSE_BETWEEN_WALLETS, list) else PAUSE_BETWEEN_WALLETS
+    for route in routes:
+        wallet_tasks.append(
+            create_task(safe_process_route(route))
+        )
+
+        time_to_pause = random.randint(
+            PAUSE_BETWEEN_WALLETS[0],
+            PAUSE_BETWEEN_WALLETS[1]
+        ) if isinstance(PAUSE_BETWEEN_WALLETS, list) else PAUSE_BETWEEN_WALLETS
+
         logger.info(f'Sleeping for {time_to_pause} seconds before next wallet...')
         await sleep(time_to_pause)
 
