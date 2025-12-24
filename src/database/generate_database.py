@@ -49,7 +49,7 @@ def generate_task_list():
 
     try:
         tasks_to_process = []
-        for task in TASKS:
+        # for task in TASKS:
             if task in globals():
                 tasks_to_process.extend(globals()[task])
             else:
