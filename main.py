@@ -130,6 +130,7 @@ async def process_route(route: Route) -> None:
             if success:
                 memory.remember_bridge(wallet_id)
                 memory.remember_task(wallet_id, task)
+            break    
 
                 # пересобираем задачи под новую сеть
                 current_chain = route.current_chain
