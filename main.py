@@ -58,7 +58,7 @@ async def process_task(routes: list[Route]) -> None:
         logger.info(f'Sleeping for {time_to_pause} seconds before next wallet...')
         await sleep(time_to_pause)
 
-    await gather(*wallet_tasks)
+    await gather(*wallet_tasks, return_exceptions=True)
 
 async def safe_process_route(route: Route):
     try:
