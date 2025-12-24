@@ -27,3 +27,12 @@ CHAIN_MODULES = {
         'UNISWAP'
     ]
 }
+from src.modules.uniswap import process_uniswap
+from src.modules.matcha import process_matcha
+# и т.д.
+
+MODULE_HANDLERS = {
+    'UNISWAP': process_uniswap,
+    'MATCHA_SWAP': process_matcha,
+    # ...
+}
