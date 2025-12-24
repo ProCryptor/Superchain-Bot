@@ -86,16 +86,23 @@ class ActivityPlanner:
         return random.randint(*self.pause_days_after_full)
         
     def get_chain_for_today(self) -> str:
-        """
-        Выбор сети на день (multi-chain поведение)
-        """
-        chains = ['BASE', 'OPTIMISM', 'ARBITRUM', 'LINEA', 'ETHEREUM']
-        random.shuffle(chains)
+        weights = {
+            'BASE': 40,
+            'OPTIMISM': 20,
+            'ARBITRUM': 20,
+            'LINEA': 15,
+            'ETHEREUM': 5
+        }
 
-        for chain in chains:
-            if not memory.was_chain_recent(wallet_id, chain):
-                logger.info(f'Planner: selected chain → {chain}')
-                return chain
+        chain = random.choices(
+            population=list(weights.keys()),
+            weights=list(weights.values()),
+            k=1
+        )[0]
+
+        logger.info(f'Planner: selected chain for today → {chain}')
+        return chain
+
 
         return random.choice(chains)
         weights = {
