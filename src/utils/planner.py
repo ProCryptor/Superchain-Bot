@@ -89,6 +89,15 @@ class ActivityPlanner:
         """
         Выбор сети на день (multi-chain поведение)
         """
+        chains = ['BASE', 'OPTIMISM', 'ARBITRUM', 'LINEA', 'ETHEREUM']
+        random.shuffle(chains)
+
+        for chain in chains:
+            if not memory.was_chain_recent(wallet_id, chain):
+                logger.info(f'Planner: selected chain → {chain}')
+                return chain
+
+        return random.choice(chains)
         weights = {
             'BASE': 40,
             'OPTIMISM': 20,
