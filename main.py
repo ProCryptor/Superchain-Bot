@@ -164,6 +164,8 @@ async def process_route(route: Route) -> None:
                     chain_name=route.current_chain
                 )
             )
+        )
+
               
         random_sleep = random.randint(
             PAUSE_BETWEEN_MODULES[0],
