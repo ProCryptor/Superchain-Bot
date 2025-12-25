@@ -2,7 +2,7 @@ import random
 from loguru import logger
 from src.utils.planner import ActivityPlanner
 from src.utils.data.bridges import BRIDGES
-
+from src.modules.bridges.bridge_factory import RelayBridge
 async def process_chain_disperse(route):
     planner = ActivityPlanner()
 
