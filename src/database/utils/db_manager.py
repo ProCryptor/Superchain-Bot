@@ -144,8 +144,6 @@ class DataBaseUtils:
 from loguru import logger
 from sqlalchemy import delete
 
-from src.database.base_models.models import WalletModel, TaskModel
-
 
 async def clear_database(engine):
     async with engine.begin() as conn:
