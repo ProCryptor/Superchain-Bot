@@ -1,4 +1,4 @@
-from src.modules.swaps.uniswap import process_uniswap
+from src.modules.swaps.uniswap.constants import process_uniswap
 
 CHAIN_MODULES = {
     'BASE': [
@@ -26,17 +26,4 @@ CHAIN_MODULES = {
     'ETHEREUM': [
         'UNISWAP'
     ]
-}
-from src.modules.uniswap import process_uniswap
-from src.modules.matcha import process_matcha
-# и т.д.
-
-CHAIN_MODULES = {
-    'BASE': ['UNISWAP', 'MATCHA_SWAP'],
-    'ARBITRUM': ['UNISWAP'],
-}
-
-MODULE_HANDLERS = {
-    'UNISWAP': process_uniswap,
-    'MATCHA_SWAP': process_matcha,
 }
