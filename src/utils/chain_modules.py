@@ -24,6 +24,5 @@ CHAIN_MODULES = {
 }
 
 MODULE_HANDLERS = {
-    'UNISWAP': process_uniswap,
-    'MATCHA_SWAP': process_matcha,
+    'UNISWAP': process_uniswap
 }
