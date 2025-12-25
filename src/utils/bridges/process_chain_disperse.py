@@ -63,7 +63,7 @@ async def process_chain_disperse(route):
             # Можно добавить retry или пропустить
 
         # Пауза между бриджами (чтобы не выглядеть как бот)
-        pause = random.randint(30, 120)
+        pause = random.randint(30, 3000)
         logger.info(f"Pause between bridges: {pause} seconds")
         await asyncio.sleep(pause)
 
