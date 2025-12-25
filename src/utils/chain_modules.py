@@ -1,4 +1,4 @@
-from src.modules.swaps.uniswap.constants import process_uniswap
+from src.modules.swaps.uniswap.uniswap import process_uniswap
 
 CHAIN_MODULES = {
     'BASE': [
