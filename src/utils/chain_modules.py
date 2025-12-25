@@ -1,5 +1,4 @@
 from src.modules.swaps.uniswap.uniswap import Uniswap
-from src.modules.swaps.matcha.matcha_transaction import Matcha
 # дальше по аналогии
 
 async def process_uniswap(route, chain):
@@ -15,10 +14,6 @@ async def process_uniswap(route, chain):
         chain=chain
     )
     return await u.swap()
-
-async def process_matcha(route, chain):
-    m = Matcha(...)
-    return await m.swap()
 
 
 CHAIN_MODULES = {
