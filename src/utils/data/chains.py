@@ -1,43 +1,52 @@
-class Chain:
-    def __init__(self, chain_id: int, rpc: str, scan: str, native_token: str) -> None:
-        self.chain_id = chain_id
-        self.rpc = rpc
-        self.scan = scan
-        self.native_token = native_token
+# src/utils/data/chains.py
+from pydantic import BaseModel
 
+class Chain(BaseModel):
+    chain_name: str
+    native_token: str
+    rpc: str
+    chain_id: int
+    scan: str  # ← добавь, если нужно (из старого кода)
+
+# Создаём экземпляры (Pydantic автоматически валидирует)
 BASE = Chain(
-    chain_id=8453,
+    chain_name='BASE',
+    native_token='ETH',
     rpc='https://mainnet.base.org',
-    scan='https://basescan.org/tx',
-    native_token='ETH'
+    chain_id=8453,
+    scan='https://basescan.org/tx'
 )
 
 OPTIMISM = Chain(
-    chain_id=10,
+    chain_name='OPTIMISM',
+    native_token='ETH',
     rpc='https://mainnet.optimism.io',
-    scan='https://optimistic.etherscan.io/tx',
-    native_token='ETH'
+    chain_id=10,
+    scan='https://optimistic.etherscan.io/tx'
 )
 
 ARBITRUM = Chain(
-    chain_id=42161,
+    chain_name='ARBITRUM',
+    native_token='ETH',
     rpc='https://arb1.arbitrum.io/rpc',
-    scan='https://arbiscan.io/tx',
-    native_token='ETH'
+    chain_id=42161,
+    scan='https://arbiscan.io/tx'
 )
 
 ETHEREUM = Chain(
-    chain_id=1,
+    chain_name='ETHEREUM',
+    native_token='ETH',
     rpc='https://rpc.ankr.com/eth',
-    scan='https://etherscan.io/tx',
-    native_token='ETH'
+    chain_id=1,
+    scan='https://etherscan.io/tx'
 )
 
 LINEA = Chain(
-    chain_id=59144,
+    chain_name='LINEA',
+    native_token='ETH',
     rpc='https://rpc.linea.build',
-    scan='https://lineascan.build/tx',
-    native_token='ETH'
+    chain_id=59144,
+    scan='https://lineascan.build/tx'
 )
 
 chain_mapping = {
@@ -47,4 +56,3 @@ chain_mapping = {
     'ETHEREUM': ETHEREUM,
     'LINEA': LINEA,
 }
-
