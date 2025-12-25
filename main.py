@@ -16,7 +16,7 @@ from src.utils.planner import ActivityPlanner
 from src.utils.data.helper import private_keys, proxies
 from src.database.generate_database import generate_database
 from src.database.models import init_models, engine
-from src.utils.chain_modules import MODULE_HANDLERS, CHAIN_MODULES
+.chain_modules import MODULE_HANDLERS, CHAIN_MODULES
 # from src.utils.data.mappings import module_handlers
 from src.utils.manage_tasks import manage_tasks
 from src.utils.retrieve_route import get_routes
@@ -128,7 +128,7 @@ async def process_route(route: Route) -> None:
         logger.info(f'Planner: today is BRIDGE day (logic later)')
 
     # Берём ТОЛЬКО нужное количество задач
-    from src.utils.data.chain_modules import CHAIN_MODULES
+    from src.utils.chain_modules import CHAIN_MODULES, MODULE_HANDLERS
 
     current_chain = route.current_chain
     available_tasks = [
