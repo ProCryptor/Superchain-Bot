@@ -38,7 +38,8 @@ async def process_chain_disperse(route):
         # Проверка баланса
         w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
         try:
-            balance_wei = await w3.eth.get_balance(route.wallet.private_key)
+            wallet_address = route.wallet.address if hasattr(route.wallet, 'address') else '0x' + route.wallet.private_key[2:]
+            balance_wei = await w3.eth.get_balance(route.wallet.address)
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
