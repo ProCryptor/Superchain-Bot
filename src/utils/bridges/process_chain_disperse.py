@@ -9,6 +9,7 @@ from src.utils.data.chains import chain_mapping
 from src.modules.bridges.bridge_factory import AcrossBridge, RelayBridge, SuperBridge
 from src.models.bridge import BridgeConfig
 from src.models.token import Token
+from loguru import logger
 
 async def process_chain_disperse(route):
     planner = ActivityPlanner()
@@ -33,13 +34,30 @@ async def process_chain_disperse(route):
 
         logger.info(f"Bridge #{i+1}/{num_bridges}: {bridge_name} | {current_chain} → {target_chain}")
 
+        from web3 import AsyncWeb3
+        from web3.providers.async_rpc import AsyncHTTPProvider
+
+        w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
+        try:
+            balance_wei = await w3.eth.get_balance(route.wallet.private_key)
+            balance_eth = w3.from_wei(balance_wei, 'ether')
+            logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
+
+            required_eth = amount + 0.001  # amount + запас на газ
+            if balance_eth < required_eth:
+                logger.warning(f"Insufficient balance in {current_chain}: {balance_eth:.6f} ETH (need ~{required_eth:.6f}). Skipping bridge.")
+                continue
+        except Exception as e:
+            logger.error(f"Failed to check balance in {current_chain}: {e}")
+            continue
+            
         try:
             bridge_config = BridgeConfig(
                 from_chain=chain_mapping[current_chain],
                 to_chain=chain_mapping[target_chain],
                 from_token=Token(chain_name=current_chain, name='ETH'),
                 to_token=Token(chain_name=target_chain, name='ETH'),
-                amount=random.uniform(0.0006, 0.004),  # в ETH (float)
+                amount=random.uniform(0.0006, 0.003),  # в ETH (float)
                 use_percentage=False,
                 bridge_percentage=0.0
             )
