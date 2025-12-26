@@ -119,7 +119,7 @@ async def create_across_tx(
             b''
         ).build_transaction({
             'value': amount,
-            'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
+            'nonce': await self.web3.eth.get_transaction_count(self.web3.to_checksum_address(self.wallet_address)),
             'from': self.web3.to_checksum_address(self.wallet_address),
             'gasPrice': await self.web3.eth.gas_price,
         })
