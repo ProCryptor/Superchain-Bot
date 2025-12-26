@@ -44,7 +44,7 @@ class Uniswap(Account, CurlCffiClient):
         )
         self.proxy = proxy
         self.chain = chain
-        self.web3 = AsyncWeb3(AsyncHTTPProvider(chain.rpc))  # ← добавлено!
+        self.web3 = AsyncWeb3(AsyncHTTPProvider(chain.rpc))  # ← инициализация web3
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__} | [{self.wallet_address}] | [{self.chain.chain_name}] |' \
@@ -79,14 +79,21 @@ class Uniswap(Account, CurlCffiClient):
             ],
             'slippageTolerance': 2.5,
         }
-        response_json, status = await self.make_request(
-            method="POST",
-            url='https://trading-api-labs.interface.gateway.uniswap.org/v1/quote',
-            headers=UNISWAP_HEADERS,
-            json=json_data
-        )
-        if status == 200:
-            return response_json['quote'], response_json.get('permitData')
+        try:
+            response_json, status = await self.make_request(
+                method="POST",
+                url='https://trading-api-labs.interface.gateway.uniswap.org/v1/quote',
+                headers=UNISWAP_HEADERS,
+                json=json_data
+            )
+            if status == 200:
+                return response_json['quote'], response_json.get('permitData')
+            else:
+                logger.error(f"Quote failed with status {status}")
+                return None
+        except Exception as e:
+            logger.error(f"Quote error: {e}")
+            return None
 
     async def get_json_data(self, quote: Dict[str, Any], permit_data: Optional[Dict[str, Any]]):
         json_data = {
@@ -146,25 +153,31 @@ class Uniswap(Account, CurlCffiClient):
 
     async def get_transaction_params(self, quote: Dict[str, Any], permit_data: Optional[Dict[str, Any]]):
         json_data = await self.get_json_data(quote, permit_data)
-        response_json, status = await self.make_request(
-            method='POST',
-            url='https://trading-api-labs.interface.gateway.uniswap.org/v1/swap',
-            headers=UNISWAP_HEADERS,
-            json=json_data
-        )
-
-        if status == 200:
-            tx = {
-                'chainId': self.chain.chain_id,
-                'to': self.web3.to_checksum_address(response_json['swap']['to']),
-                'from': self.wallet_address,
-                'value': int(response_json['swap']['value'], 16),
-                'data': response_json['swap']['data'],
-                'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
-                'gasPrice': int(response_json['swap']['gasPrice']),
-                'gas': int(response_json['swap']['gasLimit']),
-            }
-            return tx
+        try:
+            response_json, status = await self.make_request(
+                method='POST',
+                url='https://trading-api-labs.interface.gateway.uniswap.org/v1/swap',
+                headers=UNISWAP_HEADERS,
+                json=json_data
+            )
+            if status == 200:
+                tx = {
+                    'chainId': self.chain.chain_id,
+                    'to': self.web3.to_checksum_address(response_json['swap']['to']),
+                    'from': self.wallet_address,
+                    'value': int(response_json['swap']['value'], 16),
+                    'data': response_json['swap']['data'],
+                    'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
+                    'gasPrice': int(response_json['swap']['gasPrice']),
+                    'gas': int(response_json['swap']['gasLimit']),
+                }
+                return tx
+            else:
+                logger.error(f"Swap params failed with status {status}")
+                return None
+        except Exception as e:
+            logger.error(f"Swap params error: {e}")
+            return None
 
     async def check_approval(self, amount: int):
         json_data = {
@@ -190,45 +203,53 @@ class Uniswap(Account, CurlCffiClient):
             headers=UNISWAP_HEADERS,
             json=json_data
         )
-        if status == 200:
-            if response_json['approval']:
-                transaction = {
-                    'chainId': self.chain.chain_id,
-                    'to': self.web3.to_checksum_address(self.swap_config.from_token.address),
-                    'from': self.wallet_address,
-                    'value': 0,
-                    'data': response_json['approval']['data'],
-                    'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
-                    'gasPrice': int(response_json['approval']['gasPrice']),
-                    'gas': int(response_json['approval']['gasLimit']),
-                }
-                logger.debug(f'[{self.wallet_address}] | Approving token...')
-                confirmed = None
-                while True:
-                    try:
-                        tx_hash = await self.sign_transaction(transaction)
-                        confirmed = await self.wait_until_tx_finished(tx_hash)
-                        await sleep(2)
-                    except Exception as ex:
-                        if 'nonce' in str(ex):
-                            transaction.update(
-                                {'nonce': await self.web3.eth.get_transaction_count(self.wallet_address)})
-                            continue
-                        logger.error(f'Something went wrong {ex}')
-                        return False
-                    break
-                if confirmed:
-                    logger.success(f'[{self.wallet_address}] | Token approved')
-                    return True
+        if status == 200 and response_json['approval']:
+            transaction = {
+                'chainId': self.chain.chain_id,
+                'to': self.web3.to_checksum_address(self.swap_config.from_token.address),
+                'from': self.wallet_address,
+                'value': 0,
+                'data': response_json['approval']['data'],
+                'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
+                'gasPrice': int(response_json['approval']['gasPrice']),
+                'gas': int(response_json['approval']['gasLimit']),
+            }
+            logger.debug(f'[{self.wallet_address}] | Approving token...')
+            confirmed = None
+            while True:
+                try:
+                    tx_hash = await self.sign_transaction(transaction)
+                    confirmed = await self.wait_until_tx_finished(tx_hash)
+                    await sleep(2)
+                except Exception as ex:
+                    if 'nonce' in str(ex):
+                        transaction.update(
+                            {'nonce': await self.web3.eth.get_transaction_count(self.wallet_address)})
+                        continue
+                    logger.error(f'Something went wrong {ex}')
+                    return False
+                break
+            if confirmed:
+                logger.success(f'[{self.wallet_address}] | Token approved')
+                return True
+        return False
 
     async def get_transaction(self, amount: int):
         quote, permit_data = await self.quote_swap(amount)
         if not quote:
+            logger.error("No quote from Uniswap API")
             return None
+
         if not self.swap_config.from_token.name == 'ETH':
             await self.check_approval(amount)
             await sleep(4)
-        return await self.get_transaction_params(quote, permit_data)
+
+        params = await self.get_transaction_params(quote, permit_data)
+        if not params:
+            logger.error("No transaction params from Uniswap")
+            return None
+
+        return params
 
     @retry(retries=RETRIES, delay=PAUSE_BETWEEN_RETRIES, backoff=1.5)
     async def swap(self) -> Optional[bool | str]:
@@ -272,6 +293,7 @@ class Uniswap(Account, CurlCffiClient):
         transaction = await self.get_transaction(amount)
 
         if not transaction:
+            logger.warning("No valid transaction from Uniswap")
             return False
 
         tx_hash = None
