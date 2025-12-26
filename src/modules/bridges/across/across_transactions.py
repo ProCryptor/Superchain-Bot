@@ -1,5 +1,5 @@
 # src/modules/bridges/across/across_transactions.py
-from typing import Optional, Callable, Dict, Any
+from typing import Optional, Dict, Any
 
 import pyuseragents
 from eth_typing import ChecksumAddress
@@ -105,14 +105,14 @@ async def create_across_tx(
         min_received = amount - relay_fee_total
 
         tx = await contract.functions.depositV3(
-            self.wallet_address,
-            self.wallet_address,
-            bridge_config.from_token.address,
-            bridge_config.to_token.address,
+            self.web3.to_checksum_address(self.wallet_address),
+            self.web3.to_checksum_address(self.wallet_address),
+            self.web3.to_checksum_address(bridge_config.from_token.address),
+            self.web3.to_checksum_address(bridge_config.to_token.address),
             amount,
             min_received,
             bridge_config.to_chain.chain_id,
-            '0x0000000000000000000000000000000000000000',
+            self.web3.to_checksum_address('0x0000000000000000000000000000000000000000'),
             int(quote['timestamp']),
             int(quote['fillDeadline']),
             0,
@@ -120,7 +120,7 @@ async def create_across_tx(
         ).build_transaction({
             'value': amount,
             'nonce': await self.web3.eth.get_transaction_count(self.wallet_address),
-            'from': self.wallet_address,
+            'from': self.web3.to_checksum_address(self.wallet_address),
             'gasPrice': await self.web3.eth.gas_price,
         })
 
