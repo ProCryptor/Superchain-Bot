@@ -7,7 +7,7 @@ from web3.contract import AsyncContract
 from web3.types import TxParams
 
 from src.models.bridge import BridgeConfig
-
+from loguru import logger
 
 async def create_relay_tx(
         self,
