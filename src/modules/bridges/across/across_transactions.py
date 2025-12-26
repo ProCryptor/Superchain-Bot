@@ -1,5 +1,14 @@
 # src/modules/bridges/across/across_transactions.py
-from typing import Optional, Dict, Any
+from typing import Optional, Callable, Dict, Any
+
+import pyuseragents
+from eth_typing import ChecksumAddress
+from web3.contract import AsyncContract
+
+from src.models.bridge import BridgeConfig
+from src.models.contracts import AcrossBridgeData
+from src.utils.data.tokens import tokens
+from loguru import logger
 
 import pyuseragents
 from eth_typing import ChecksumAddress
