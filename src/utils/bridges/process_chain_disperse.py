@@ -10,6 +10,7 @@ from src.utils.data.chains import chain_mapping
 from src.modules.bridges.bridge_factory import AcrossBridge, RelayBridge, SuperBridge
 from src.models.bridge import BridgeConfig
 from src.models.token import Token
+from src.utils.data.tokens import tokens
 
 async def process_chain_disperse(route):
     planner = ActivityPlanner()
@@ -28,6 +29,9 @@ async def process_chain_disperse(route):
         if not target_chain:
             logger.warning("No target chain available, skipping bridge")
             continue
+
+        from_token = tokens[current_chain]['ETH']
+        to_token = tokens[target_chain]['ETH']
 
         # Выбираем случайный бридж-класс
         bridge_class = random.choice(bridge_classes)
