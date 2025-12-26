@@ -41,7 +41,7 @@ async def process_chain_disperse(route):
             to_chain=chain_mapping[target_chain],
             from_token=Token(chain_name=current_chain, name='ETH'),
             to_token=Token(chain_name=target_chain, name='ETH'),
-            amount = Web3.to_wei(random.uniform(0.002, 0.005), 'ether')
+            amount = Web3.to_wei(random.uniform(0.002, 0.005), 'ether'),
             use_percentage=False,
             bridge_percentage=0.0
         )
