@@ -20,7 +20,7 @@ async def process_chain_disperse(route):
     current_chain = route.current_chain or 'BASE'
 
     # Сколько бриджей сделать сегодня (2–4)
-    num_bridges = random.randint(2, 4)
+    num_bridges = random.randint(1)
     logger.info(f"BRIDGE DAY: planning {num_bridges} bridges")
 
     bridge_classes = [RelayBridge] * 6 + [AcrossBridge] * 4  # 70% Relay, 30% Across
