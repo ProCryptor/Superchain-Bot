@@ -1,5 +1,5 @@
 # src/modules/bridges/across/across_transactions.py
-from typing import Optional, Dict, Any
+from typing import Optional, Callable, Dict, Any
 
 import pyuseragents
 from eth_typing import ChecksumAddress
