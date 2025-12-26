@@ -34,8 +34,7 @@ async def process_chain_disperse(route):
 
         logger.info(f"Bridge #{i+1}/{num_bridges}: {bridge_name} | {current_chain} → {target_chain}")
 
-        from web3 import AsyncWeb3
-        from web3.providers.async_rpc import AsyncHTTPProvider
+        from web3 import AsyncWeb3, AsyncHTTPProvider
 
         w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
         try:
@@ -47,10 +46,7 @@ async def process_chain_disperse(route):
             if balance_eth < required_eth:
                 logger.warning(f"Insufficient balance in {current_chain}: {balance_eth:.6f} ETH (need ~{required_eth:.6f}). Skipping bridge.")
                 continue
-        except Exception as e:
-            logger.error(f"Failed to check balance in {current_chain}: {e}")
-            continue
-            
+                
         try:
             bridge_config = BridgeConfig(
                 from_chain=chain_mapping[current_chain],
