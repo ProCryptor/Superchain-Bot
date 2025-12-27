@@ -8,11 +8,12 @@ from eth_account import Account
 
 from src.modules.swaps.uniswap.uniswap import Uniswap
 from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap  # ← правильные импорты из фабрики
-
+from src.modules.handlers.uniswap import handle_uniswap
 from src.models.chain import Chain
 from src.utils.data.tokens import tokens
 
 async def process_uniswap(route, chain_obj):
+    return await handle_uniswap(route, chain_obj)
     max_attempts = 20
     attempt = 0
     success = False
