@@ -69,20 +69,21 @@ class ActivityPlanner:
         return chain
 
     def get_transactions_count(self, day_type: str) -> int:
-        modifier = self.get_weekday_modifier()
+        # Всегда рандом 2–4 бриджa, игнорируем day_type и modifier
+        tx_count = random.randint(2, 4)
 
-        if day_type == 'LIGHT':
-            base = random.randint(*self.light_day_tx_range)
-        else:
-            base = random.randint(*self.full_day_tx_range)
-
+        # Влияние личности (опционально, можно оставить)
         if self.personality == 'ACTIVE':
-            base += random.randint(2, 4)
+            tx_count += random.randint(1, 2)
         elif self.personality == 'LAZY':
-            base = max(1, base - 1)
+            tx_count = max(2, tx_count - 1)
 
-        tx_count = int(base * modifier)
-        return max(1, tx_count)
+        # Weekend modifier — отключаем (или оставляем, если хочешь)
+        # modifier = self.get_weekday_modifier()  # ← закомментируй, если нужно
+        # tx_count = int(tx_count * modifier)
+
+        logger.info(f"Planner: transactions count → {tx_count} (personality: {self.personality})")
+        return max(2, tx_count)  # ← минимум 2, чтобы никогда не было 1
 
     def get_pause_days_after(self, day_type: str) -> int:
         if day_type == 'LIGHT':
