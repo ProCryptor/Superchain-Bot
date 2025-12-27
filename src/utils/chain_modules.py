@@ -7,7 +7,8 @@ from web3 import AsyncWeb3, AsyncHTTPProvider
 from eth_account import Account
 
 from src.modules.swaps.uniswap.uniswap import Uniswap
-from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap
+from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap  # ← правильные импорты из фабрики
+
 from src.models.chain import Chain
 from src.utils.data.tokens import tokens
 
