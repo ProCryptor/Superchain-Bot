@@ -162,9 +162,9 @@ async def process_bungee_swap(route, chain_obj):
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {chain_obj.chain_name}: {balance_eth:.6f} ETH")
 
-            base_amount = random.uniform(0.0005, 0.005)
+            base_amount = random.uniform(0.0005, 0.0015)
             amount = base_amount
-            required_eth = amount + 0.0005
+            required_eth = amount + 0.00015
 
             if balance_eth >= required_eth:
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
