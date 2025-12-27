@@ -24,8 +24,8 @@ async def process_uniswap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = 'ETH'
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -105,8 +105,8 @@ async def process_matcha_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = 'ETH'
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -186,8 +186,8 @@ async def process_bungee_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = 'ETH'
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -267,8 +267,8 @@ async def process_relay_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = 'ETH'
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
