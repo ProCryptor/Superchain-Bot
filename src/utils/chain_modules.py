@@ -5,7 +5,7 @@ from loguru import logger  # ← импорт logger
 
 from web3 import AsyncWeb3, AsyncHTTPProvider
 from eth_account import Account
-
+from src.modules.swaps.relayswap.relay_transaction import get_data  # ← для RelaySwap
 from src.modules.swaps.uniswap.uniswap import Uniswap
 from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap
 from src.modules.handlers.uniswap import handle_uniswap
@@ -45,18 +45,18 @@ async def process_uniswap(route, chain_obj):
             required_eth = amount + 0.0005
 
             if balance_eth >= required_eth:
-                logger.info(f"Enough balance for {amount:.6f} ETH swap")
+                logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                 success = True
             else:
-                amount = max(0.0001, float(balance_eth) - 0.0005)
-                required_eth = amount + 0.0005
-                if balance_eth >= required_eth:
-                    logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
-                    success = True
-                else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
-                    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
+                # Switch chain даже если reduce
+                alternatives = [c for c in chain_mapping.keys() if c != current_chain]
+                if alternatives:
+                    current_chain = random.choice(alternatives)
+                    logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
+
+            from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+            to_token = random.choice(['USDC', 'USDT', 'DAI'])
+            logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
                     if alternatives:
@@ -126,18 +126,18 @@ async def process_matcha_swap(route, chain_obj):
             required_eth = amount + 0.0005
 
             if balance_eth >= required_eth:
-                logger.info(f"Enough balance for {amount:.6f} ETH swap")
+                logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                 success = True
             else:
-                amount = max(0.0001, float(balance_eth) - 0.0005)
-                required_eth = amount + 0.0005
-                if balance_eth >= required_eth:
-                    logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
-                    success = True
-                else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
-                    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
+                # Switch chain даже если reduce
+                alternatives = [c for c in chain_mapping.keys() if c != current_chain]
+                if alternatives:
+                    current_chain = random.choice(alternatives)
+                    logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
+
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
                     if alternatives:
@@ -288,18 +288,18 @@ async def process_relay_swap(route, chain_obj):
             required_eth = amount + 0.0005
 
             if balance_eth >= required_eth:
-                logger.info(f"Enough balance for {amount:.6f} ETH swap")
+                logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                 success = True
             else:
-                amount = max(0.0001, float(balance_eth) - 0.0005)
-                required_eth = amount + 0.0005
-                if balance_eth >= required_eth:
-                    logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
-                    success = True
-                else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
-                    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
+                # Switch chain даже если reduce
+                alternatives = [c for c in chain_mapping.keys() if c != current_chain]
+                if alternatives:
+                    current_chain = random.choice(alternatives)
+                    logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
+
+    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
                     if alternatives:
