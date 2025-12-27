@@ -70,6 +70,14 @@ def create_swap_class(
                 chain=chain
             )
 
+            # Добавляем необходимые атрибуты (это было пропущено)
+            self.contract = self.web3.eth.contract(
+                address=self.contract_address,
+                abi=self.abi
+            )
+            self.web3 = AsyncWeb3(AsyncHTTPProvider(chain.rpc))
+            self.account = Account.from_key(private_key)
+
         def __str__(self) -> str:
             return f'{self.__class__.__name__} | [{self.wallet_address}] | [{self.chain.chain_name}] |' \
                    f' [{self.config.from_token.name} => {self.config.to_token.name}]'
@@ -97,9 +105,9 @@ def create_swap_class(
         async def swap(self) -> bool:
             tx_params, to_address = await self.create_swap_tx(
                 self.config,
-                self.contract,
-                0,  # amount_out — можно 0, если не используется
-                int(self.config.amount * 10**18)  # amount in wei
+                self.contract,  # ← теперь self.contract существует
+                0,
+                int(self.config.amount * 10**18)
             )
             if not tx_params:
                 logger.error(f"{self.name} failed to create tx params")
