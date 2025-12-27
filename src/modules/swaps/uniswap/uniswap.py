@@ -81,7 +81,7 @@ class Uniswap(Account, CurlCffiClient):
         }
         headers = UNISWAP_HEADERS.copy()
         headers.update({
-            'x-api-key': 'your_api_key_if_needed',  # ← если есть ключ
+            'x-api-key': 'your_api_key_if_needed',  # ← если есть ключ — вставь
             'x-request-source': 'uniswap-web',
             'x-universal-router-version': '1.2',
         })
@@ -94,6 +94,9 @@ class Uniswap(Account, CurlCffiClient):
             )
             if status == 200:
                 return response_json['quote'], response_json.get('permitData')
+            elif status == 400 or status == 401:
+                logger.warning(f"Uniswap API {status}: Chain not supported or invalid params - {response_json}")
+                return None
             else:
                 logger.error(f"Quote failed with status {status}: {response_json}")
                 return None
