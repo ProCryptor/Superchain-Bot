@@ -12,7 +12,7 @@ from src.modules.handlers.uniswap import handle_uniswap
 from src.models.chain import Chain
 from src.utils.data.tokens import tokens
 from src.utils.data.chains import chain_mapping
-from src.modules.swaps.relayswap.relay_transaction import get_data  
+from src.modules.swaps.relayswap.relay_transaction import create_relay_swap_tx  
 
 async def process_uniswap(route, chain_obj):
     # Сначала пробуем handle_uniswap
