@@ -7,30 +7,38 @@ from web3 import AsyncWeb3, AsyncHTTPProvider
 from eth_account import Account
 
 from src.modules.swaps.uniswap.uniswap import Uniswap
-from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap  # ← правильные импорты из фабрики
+from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap
 from src.modules.handlers.uniswap import handle_uniswap
 from src.models.chain import Chain
 from src.utils.data.tokens import tokens
+from src.utils.data.chains import chain_mapping  # ← ИМПОРТ, который не был — это причина ошибки!
 
 async def process_uniswap(route, chain_obj):
-    return await handle_uniswap(route, chain_obj)
-    max_attempts = 50
+    # Сначала пробуем handle_uniswap
+    try:
+        return await handle_uniswap(route, chain_obj)
+    except Exception as e:
+        logger.warning(f"Uniswap failed, fallback to loop: {e}")
+
+    max_attempts = 20
     attempt = 0
     success = False
+    current_chain = chain_obj.chain_name
     from_token = 'ETH'
+    to_token = random.choice(['USDC', 'USDT', 'DAI'])
     amount = None
 
     while attempt < max_attempts and not success:
         attempt += 1
-        logger.info(f"Uniswap attempt {attempt}/{max_attempts} on {chain_obj.chain_name}")
+        logger.info(f"Uniswap attempt {attempt}/{max_attempts} on {current_chain}")
 
-        w3 = AsyncWeb3(AsyncHTTPProvider(chain_obj.rpc))
+        w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
         try:
             account = Account.from_key(route.wallet.private_key)
             wallet_address = account.address
             balance_wei = await w3.eth.get_balance(wallet_address)
             balance_eth = w3.from_wei(balance_wei, 'ether')
-            logger.info(f"Balance in {chain_obj.chain_name}: {balance_eth:.6f} ETH")
+            logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
             base_amount = random.uniform(0.0005, 0.005)
             amount = base_amount
@@ -40,19 +48,33 @@ async def process_uniswap(route, chain_obj):
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
                 success = True
             else:
-                amount = max(0.0001, float(balance_eth) - 0.0005)  # ← float для type-error
+                amount = max(0.0001, float(balance_eth) - 0.0005)
                 required_eth = amount + 0.0005
                 if balance_eth >= required_eth:
                     logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                     success = True
                 else:
                     from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    logger.warning(f"Switching token to {from_token} for attempt {attempt}")
+                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
+
+                    alternatives = [c for c in chain_mapping.keys() if c != current_chain]
+                    if alternatives:
+                        current_chain = random.choice(alternatives)
+                        logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
+
+                    chain_obj = Chain(
+                        chain_name=current_chain,
+                        native_token=chain_mapping[current_chain].native_token,
+                        rpc=chain_mapping[current_chain].rpc,
+                        chain_id=chain_mapping[current_chain].chain_id,
+                        scan=chain_mapping[current_chain].scan
+                    )
         except Exception as e:
             logger.error(f"Failed to check balance (attempt {attempt}): {e}")
 
     if not success:
-        logger.warning(f"Uniswap skipped: No suitable amount/token after {max_attempts} attempts")
+        logger.warning(f"Uniswap skipped: No suitable amount/token/chain after {max_attempts} attempts")
         return False
 
     try:
@@ -60,7 +82,7 @@ async def process_uniswap(route, chain_obj):
             private_key=route.wallet.private_key,
             proxy=route.wallet.proxy,
             from_token=from_token,
-            to_token='USDC',
+            to_token=to_token,
             amount=amount,
             use_percentage=False,
             swap_percentage=0.0,
@@ -141,29 +163,6 @@ async def process_matcha_swap(route, chain_obj):
             private_key=route.wallet.private_key,
             from_token=from_token,
             to_token=to_token,
-            amount=amount,
-            use_percentage=False,
-            swap_percentage=0.0,
-            swap_all_balance=False,
-            proxy=route.wallet.proxy,
-            chain=chain_obj
-        )
-        success = await matcha.swap()
-        if success:
-            logger.success(f"Matcha swap successful on {chain_obj.chain_name}")
-            return True
-        else:
-            logger.error(f"Matcha swap failed on {chain_obj.chain_name}")
-            return False
-    except Exception as e:
-        logger.error(f"Matcha error: {e}")
-        return False
-
-    try:
-        matcha = MatchaSwap(
-            private_key=route.wallet.private_key,
-            from_token=from_token,
-            to_token='USDC',
             amount=amount,
             use_percentage=False,
             swap_percentage=0.0,
@@ -264,96 +263,6 @@ async def process_bungee_swap(route, chain_obj):
         return False
 
 async def process_relay_swap(route, chain_obj):
-    max_attempts = 20  # ← верни 20, 50 — слишком много
-    attempt = 0
-    success = False
-    current_chain = chain_obj.chain_name
-    from_token = 'ETH'
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])  # ← рандомный to_token
-    amount = None
-
-    while attempt < max_attempts and not success:
-        attempt += 1
-        logger.info(f"RelaySwap attempt {attempt}/{max_attempts} on {current_chain}")
-
-        w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
-        try:
-            account = Account.from_key(route.wallet.private_key)
-            wallet_address = account.address
-            balance_wei = await w3.eth.get_balance(wallet_address)
-            balance_eth = w3.from_wei(balance_wei, 'ether')
-            logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
-
-            base_amount = random.uniform(0.0002, 0.003)
-            amount = base_amount
-            required_eth = amount + 0.0002
-
-            if balance_eth >= required_eth:
-                logger.info(f"Enough balance for {amount:.6f} ETH swap")
-                success = True
-            else:
-                amount = max(0.0001, float(balance_eth) - 0.0005)
-                required_eth = amount + 0.0005
-                if balance_eth >= required_eth:
-                    logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
-                    success = True
-                else:
-                    # Меняем токен
-                    from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])  # ← рандомный to_token
-                    logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
-
-                    # Меняем цепочку, если баланса нет
-                    alternatives = [c for c in chain_mapping.keys() if c != current_chain]
-                    if alternatives:
-                        current_chain = random.choice(alternatives)
-                        logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
-
-                    # Обновляем chain_obj для новой цепочки
-                    chain_obj = Chain(
-                        chain_name=current_chain,
-                        native_token=chain_mapping[current_chain].native_token,
-                        rpc=chain_mapping[current_chain].rpc,
-                        chain_id=chain_mapping[current_chain].chain_id,
-                        scan=chain_mapping[current_chain].scan
-                    )
-        except Exception as e:
-            logger.error(f"Failed to check balance (attempt {attempt}): {e}")
-
-    if not success:
-        logger.warning(f"RelaySwap skipped: No suitable amount/token/chain after {max_attempts} attempts")
-        return False
-
-    try:
-        relay = RelaySwap(
-            private_key=route.wallet.private_key,
-            from_token=from_token,
-            to_token=to_token,  # ← рандомный to_token
-            amount=amount,
-            use_percentage=False,
-            swap_percentage=0.0,
-            swap_all_balance=False,
-            proxy=route.wallet.proxy,
-            chain=chain_obj
-        )
-        success = await relay.swap()
-        if success:
-            logger.success(f"RelaySwap swap successful on {chain_obj.chain_name}")
-            return True
-        else:
-            logger.error(f"RelaySwap swap failed on {chain_obj.chain_name}")
-            return False
-    except Exception as e:
-        logger.error(f"RelaySwap error: {e}")
-        return False
-
-async def process_uniswap(route, chain_obj):
-    # Сначала пробуем handle_uniswap
-    try:
-        return await handle_uniswap(route, chain_obj)
-    except Exception as e:
-        logger.warning(f"Uniswap failed, fallback to loop: {e}")
-
     max_attempts = 20
     attempt = 0
     success = False
@@ -364,7 +273,7 @@ async def process_uniswap(route, chain_obj):
 
     while attempt < max_attempts and not success:
         attempt += 1
-        logger.info(f"Uniswap attempt {attempt}/{max_attempts} on {current_chain}")
+        logger.info(f"RelaySwap attempt {attempt}/{max_attempts} on {current_chain}")
 
         w3 = AsyncWeb3(AsyncHTTPProvider(chain_mapping[current_chain].rpc))
         try:
@@ -408,31 +317,32 @@ async def process_uniswap(route, chain_obj):
             logger.error(f"Failed to check balance (attempt {attempt}): {e}")
 
     if not success:
-        logger.warning(f"Uniswap skipped: No suitable amount/token/chain after {max_attempts} attempts")
+        logger.warning(f"RelaySwap skipped: No suitable amount/token/chain after {max_attempts} attempts")
         return False
 
     try:
-        uniswap = Uniswap(
+        relay = RelaySwap(
             private_key=route.wallet.private_key,
-            proxy=route.wallet.proxy,
             from_token=from_token,
             to_token=to_token,
             amount=amount,
             use_percentage=False,
             swap_percentage=0.0,
             swap_all_balance=False,
+            proxy=route.wallet.proxy,
             chain=chain_obj
         )
-        success = await uniswap.swap()
+        success = await relay.swap()
         if success:
-            logger.success(f"Uniswap swap successful on {chain_obj.chain_name}")
+            logger.success(f"RelaySwap swap successful on {chain_obj.chain_name}")
             return True
         else:
-            logger.error(f"Uniswap swap failed on {chain_obj.chain_name}")
+            logger.error(f"RelaySwap swap failed on {chain_obj.chain_name}")
             return False
     except Exception as e:
-        logger.error(f"Uniswap error: {e}")
+        logger.error(f"RelaySwap error: {e}")
         return False
+
 # Список модулей для цепочек
 CHAIN_MODULES = {
     'BASE': ['MATCHA_SWAP', 'BUNGEE_SWAP', 'RELAY_SWAP'],
@@ -448,5 +358,4 @@ MODULE_HANDLERS = {
     'MATCHA_SWAP': process_matcha_swap,
     'BUNGEE_SWAP': process_bungee_swap,
     'RELAY_SWAP': process_relay_swap,
-    # ... твои другие задачи (bridge, vote и т.д.)
 }
