@@ -1,12 +1,11 @@
+# src/modules/swaps/relayswap/relay_transaction.py
 import pyuseragents
 from eth_typing import ChecksumAddress
 from web3.contract import AsyncContract
 from web3.types import TxParams
 from loguru import logger
-from decimal import Decimal
 
 from src.models.swap import SwapConfig
-
 
 async def create_relay_swap_tx(
         self,
@@ -15,10 +14,6 @@ async def create_relay_swap_tx(
         amount_out: int,
         amount: int
 ):
-    """
-    RelaySwap TX creator (ETH <-> ERC20)
-    """
-
     steps = await get_relay_swap_data(
         self=self,
         swap_config=swap_config,
@@ -60,7 +55,6 @@ async def create_relay_swap_tx(
     logger.error("RelaySwap: no executable tx found")
     return None, None
 
-
 async def get_relay_swap_data(
         self,
         swap_config: SwapConfig,
@@ -84,11 +78,11 @@ async def get_relay_swap_data(
         'originCurrency':
             '0x0000000000000000000000000000000000000000'
             if from_token == self.chain.native_token else
-            self.chain.tokens[from_token],
+            self.chain.tokens.get(from_token, '0x0'),
         'destinationCurrency':
             '0x0000000000000000000000000000000000000000'
             if to_token == self.chain.native_token else
-            self.chain.tokens[to_token],
+            self.chain.tokens.get(to_token, '0x0'),
         'recipient': self.wallet_address,
         'tradeType': 'EXACT_INPUT',
         'amount': str(int(amount)),
@@ -96,12 +90,16 @@ async def get_relay_swap_data(
         'useExternalLiquidity': False,
     }
 
-    response, status = await self.make_request(
-        method='POST',
-        url='https://api.relay.link/quote',
-        headers=headers,
-        json=json_data
-    )
+    try:
+        response, status = await self.make_request(
+            method='POST',
+            url='https://api.relay.link/quote',
+            headers=headers,
+            json=json_data
+        )
+    except Exception as e:
+        logger.error(f"RelaySwap API request failed: {e}")
+        return []
 
     logger.info(f"RelaySwap API status: {status}")
 
