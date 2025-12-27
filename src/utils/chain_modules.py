@@ -25,8 +25,8 @@ async def process_uniswap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -59,8 +59,8 @@ async def process_uniswap(route, chain_obj):
                     current_chain = random.choice(alternatives)
                     logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
 
-                from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                from_token = random.choice(['USDC', 'USDT', 'DAI'])
+                to_token = random.choice(['ETH', 'USDT'])
                 logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                 chain_obj = Chain(
@@ -105,8 +105,8 @@ async def process_matcha_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -139,8 +139,8 @@ async def process_matcha_swap(route, chain_obj):
                     current_chain = random.choice(alternatives)
                     logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
 
-                from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                from_token = random.choice(['USDC', 'USDT', 'DAI'])
+                to_token = random.choice(['ETH', 'USDT'])
                 logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                 chain_obj = Chain(
@@ -185,8 +185,8 @@ async def process_bungee_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -219,8 +219,8 @@ async def process_bungee_swap(route, chain_obj):
                     current_chain = random.choice(alternatives)
                     logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
 
-                from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                from_token = random.choice(['USDC', 'USDT', 'DAI'])
+                to_token = random.choice(['ETH', 'USDT'])
                 logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                 chain_obj = Chain(
@@ -265,8 +265,8 @@ async def process_relay_swap(route, chain_obj):
     attempt = 0
     success = False
     current_chain = chain_obj.chain_name
-    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+    from_token = random.choice(['USDC', 'USDT', 'DAI'])
+    to_token = random.choice(['ETH', 'USDT'])
     amount = None
 
     while attempt < max_attempts and not success:
@@ -299,8 +299,8 @@ async def process_relay_swap(route, chain_obj):
                     current_chain = random.choice(alternatives)
                     logger.warning(f"Switching chain to {current_chain} for attempt {attempt}")
 
-                from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
-                to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                from_token = random.choice(['USDC', 'USDT', 'DAI'])
+                to_token = random.choice(['ETH', 'USDT'])
                 logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                 chain_obj = Chain(
