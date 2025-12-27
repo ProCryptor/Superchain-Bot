@@ -40,9 +40,9 @@ async def process_uniswap(route, chain_obj):
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
-            base_amount = random.uniform(0.0005, 0.005)
+            base_amount = random.uniform(0.0002, 0.002)
             amount = base_amount
-            required_eth = amount + 0.0005
+            required_eth = amount + 0.0001
 
             if balance_eth >= required_eth:
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
@@ -54,8 +54,8 @@ async def process_uniswap(route, chain_obj):
                     logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                     success = True
                 else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+                    to_token = random.choice(['ETH', 'USDT'])
                     logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
@@ -121,9 +121,9 @@ async def process_matcha_swap(route, chain_obj):
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
-            base_amount = random.uniform(0.0005, 0.005)
+            base_amount = random.uniform(0.0001, 0.002)
             amount = base_amount
-            required_eth = amount + 0.0005
+            required_eth = amount + 0.0001
 
             if balance_eth >= required_eth:
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
@@ -135,8 +135,8 @@ async def process_matcha_swap(route, chain_obj):
                     logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                     success = True
                 else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+                    to_token = random.choice(['ETH', 'USDT'])
                     logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
@@ -202,9 +202,9 @@ async def process_bungee_swap(route, chain_obj):
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
-            base_amount = random.uniform(0.0005, 0.005)
+            base_amount = random.uniform(0.0001, 0.002)
             amount = base_amount
-            required_eth = amount + 0.0005
+            required_eth = amount + 0.0001
 
             if balance_eth >= required_eth:
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
@@ -216,8 +216,8 @@ async def process_bungee_swap(route, chain_obj):
                     logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                     success = True
                 else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+                    to_token = random.choice(['USDC', 'USDT'])
                     logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
@@ -283,9 +283,9 @@ async def process_relay_swap(route, chain_obj):
             balance_eth = w3.from_wei(balance_wei, 'ether')
             logger.info(f"Balance in {current_chain}: {balance_eth:.6f} ETH")
 
-            base_amount = random.uniform(0.0005, 0.005)
+            base_amount = random.uniform(0.0001, 0.002)
             amount = base_amount
-            required_eth = amount + 0.0005
+            required_eth = amount + 0.0001
 
             if balance_eth >= required_eth:
                 logger.info(f"Enough balance for {amount:.6f} ETH swap")
@@ -297,8 +297,8 @@ async def process_relay_swap(route, chain_obj):
                     logger.warning(f"Reduced amount to {amount:.6f} ETH for swap")
                     success = True
                 else:
-                    from_token = random.choice(['ETH', 'USDC', 'USDT'])
-                    to_token = random.choice(['USDC', 'USDT', 'DAI'])
+                    from_token = random.choice(['ETH', 'USDC', 'USDT', 'DAI'])
+                    to_token = random.choice(['ETH', 'USDT'])
                     logger.warning(f"Switching token to {from_token} → {to_token} for attempt {attempt}")
 
                     alternatives = [c for c in chain_mapping.keys() if c != current_chain]
