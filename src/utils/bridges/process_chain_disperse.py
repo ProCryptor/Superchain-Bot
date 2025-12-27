@@ -4,7 +4,6 @@ import asyncio
 from loguru import logger
 
 from src.utils.planner import ActivityPlanner
-from src.utils.data.bridges import BRIDGES
 from src.utils.data.bridges import BRIDGES, BRIDGE_ROUTES  # ← добавь BRIDGE_ROUTES
 from src.utils.data.chains import chain_mapping
 from src.modules.bridges.bridge_factory import AcrossBridge, RelayBridge, SuperBridge
@@ -123,7 +122,7 @@ async def process_chain_disperse(route):
 
     logger.info(f"BRIDGE DAY completed: {success_count}/{num_bridges} successful")
 
-       # ← СВАПЫ НАЧИНАЮТСЯ ЗДЕСЬ
+    # ← СВАПЫ НАЧИНАЮТСЯ ЗДЕСЬ
     logger.info(f"Starting {random.randint(2, 4)} swaps on {current_chain} after bridge day")
 
     available_swaps = [t for t in CHAIN_MODULES.get(current_chain, []) if t in ['UNISWAP', 'MATCHA_SWAP', 'BUNGEE_SWAP', 'RELAY_SWAP']]
@@ -131,6 +130,12 @@ async def process_chain_disperse(route):
         logger.warning(f"No swap tasks available for {current_chain}")
     else:
         swap_tasks = random.sample(available_swaps, k=min(random.randint(2, 4), len(available_swaps)))
+        chain_obj = Chain(
+            chain_name=current_chain,
+            native_token=chain_mapping[current_chain].native_token,
+            rpc=chain_mapping[current_chain].rpc,
+            chain_id=chain_mapping[current_chain].chain_id,
+            scan=chain_mapping[current_chain].scan
         for task in swap_tasks:
             max_swap_attempts = 3  # ← 3 попытки на задачу
             swap_attempt = 0
