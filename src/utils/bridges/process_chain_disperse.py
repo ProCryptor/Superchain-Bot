@@ -5,6 +5,7 @@ from loguru import logger
 
 from src.utils.planner import ActivityPlanner
 from src.utils.data.bridges import BRIDGES
+from src.utils.data.bridges import BRIDGES, BRIDGE_ROUTES  # ← добавь BRIDGE_ROUTES
 from src.utils.data.chains import chain_mapping
 from src.modules.bridges.bridge_factory import AcrossBridge, RelayBridge, SuperBridge
 from src.models.bridge import BridgeConfig
