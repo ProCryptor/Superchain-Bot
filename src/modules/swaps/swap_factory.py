@@ -3,6 +3,8 @@ from typing import Callable, Optional
 from eth_typing import ChecksumAddress
 from web3.contract import AsyncContract
 from web3.types import TxParams
+from web3 import AsyncWeb3, AsyncHTTPProvider
+from eth_account import Account
 
 from src.models.chain import Chain
 from src.models.contracts import *
@@ -50,7 +52,6 @@ def create_swap_class(
                 from_token=Token(
                     chain_name=chain.chain_name,
                     name=from_token
-
                 ),
                 to_token=Token(
                     chain_name=chain.chain_name,
@@ -70,11 +71,17 @@ def create_swap_class(
                 name=name,
                 chain=chain
             )
-            # Фикс: не создаём contract, если abi = None
+
+            # Фикс: создаём необходимые атрибуты
+            self.web3 = AsyncWeb3(AsyncHTTPProvider(chain.rpc))
+            self.account = Account.from_key(private_key)
+            self.wallet_address = self.account.address
+
+            # Contract создаётся только если ABI есть
             if abi is not None and abi:
                 self.contract = self.web3.eth.contract(
                     address=self.contract_address,
-                    abi=self.abi
+                    abi=abi
                 )
             else:
                 self.contract = None  # API-based, contract не нужен
