@@ -120,9 +120,9 @@ async def process_route(route: Route) -> None:
     private_key = route.wallet.private_key
 
     
-    # if not memory.can_bridge_today(wallet_id):
-    #    logger.info('Memory: bridge cooldown active')
-    #    is_bridge_day = False
+    if not memory.can_bridge_today(wallet_id):
+        logger.info('Memory: bridge cooldown active')
+        is_bridge_day = False
 
     if is_bridge_day:
         logger.info(f'Planner: today is BRIDGE day (logic later)')
