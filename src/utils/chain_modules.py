@@ -4,7 +4,7 @@ import asyncio
 from loguru import logger
 
 from web3 import AsyncWeb3, AsyncHTTPProvider
-from eth_account import Account
+from src.utils.user.account import Account
 
 from src.modules.swaps.uniswap.uniswap import Uniswap
 from src.modules.swaps.swap_factory import MatchaSwap, BungeeSwap, RelaySwap
