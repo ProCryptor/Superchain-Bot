@@ -6,6 +6,7 @@ from web3.types import TxParams
 from src.utils.data.tokens import tokens
 from src.models.swap import SwapConfig
 from src.utils.request_client.curl_cffi_client import CurlCffiClient
+from loguru import logger
 
 
 async def get_gas_params(headers: Dict[str, Any], tls_client: CurlCffiClient, chain_id: int):
