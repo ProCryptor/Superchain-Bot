@@ -78,11 +78,11 @@ async def get_relay_swap_data(
         'originCurrency':
             '0x0000000000000000000000000000000000000000'
             if from_token == self.chain.native_token else
-            self.chain.tokens.get(from_token, '0x0'),
+            self.chain.tokens.get(from_token.name if hasattr(from_token, 'name') else from_token, '0x0'),
         'destinationCurrency':
             '0x0000000000000000000000000000000000000000'
             if to_token == self.chain.native_token else
-            self.chain.tokens.get(to_token, '0x0'),
+            self.chain.tokens.get(to_token.name if hasattr(to_token, 'name') else to_token, '0x0'),
         'recipient': self.wallet_address,
         'tradeType': 'EXACT_INPUT',
         'amount': str(int(amount)),
