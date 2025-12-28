@@ -5,6 +5,7 @@ from web3.contract import AsyncContract
 from web3.types import TxParams
 from web3 import AsyncWeb3, AsyncHTTPProvider
 from eth_account import Account
+from loguru import logger
 
 from src.models.chain import Chain
 from src.models.contracts import *
